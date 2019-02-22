@@ -1,0 +1,124 @@
+BACKUP ~haldamir/backup~
+SUPPORT ~https://www.gibberlings3.net/topic/19761-haldamir-npc-for-bgii/~
+
+VERSION ~v4~
+
+README ~haldamir/readme-haldamir.html~
+
+AUTO_TRA ~haldamir/tra/%s~
+
+ALWAYS
+
+  ACTION_IF NOT VARIABLE_IS_SET bg2_chapter THEN BEGIN // check to make this happen only once per install
+
+    ACTION_IF GAME_IS ~eet~ BEGIN
+      OUTER_SET bg2_chapter = 12
+    END ELSE BEGIN
+      OUTER_SET bg2_chapter = 0
+    END
+    OUTER_FOR (i=1; i<=10; i=i+1) BEGIN
+      OUTER_SET bg2_chapter = bg2_chapter + 1
+      OUTER_SPRINT name_source ~bg2_chapter_%i%~
+      OUTER_SET EVAL ~%name_source%~ = bg2_chapter
+    END
+
+    ACTION_DEFINE_ARRAY fl#reload BEGIN setup-haldamir END
+    LAF HANDLE_CHARSETS INT_VAR infer_charsets = 1 STR_VAR tra_path = ~haldamir/tra~ reload_array = fl#reload END
+
+  END
+  
+END
+
+LANGUAGE ~English~ ~English~ ~haldamir/tra/english/setup-haldamir.tra~
+LANGUAGE ~German~  ~german~  ~haldamir/tra/english/setup-haldamir.tra~
+                             ~haldamir/tra/german/setup-haldamir.tra~
+
+BEGIN @1
+
+APPEND ~STATE.IDS~ ~0x80101FEF CD_STATE_NOTVALID~ UNLESS ~CD_STATE_NOTVALID~
+
+COPY ~haldamir/audio/blank.mus~ ~music~
+COPY_EXISTING ~songlist.2da~ ~override~
+  SET_2DA_ENTRY 0 2 3 ~BLANK.MUS~
+
+/* Haldamir's Soundset */
+LAF HANDLE_AUDIO STR_VAR audio_path = ~haldamir/audio/english~ oggdec_path = ~haldamir/audio~ END
+
+// Imoen gets her groove back. And her banter file. from Fixpack
+ACTION_IF GAME_INCLUDES ~tob~ THEN BEGIN
+  COPY_EXISTING ~interdia.2da~ ~override~
+    SET_2DA_ENTRY 17 1 2 ~BIMOEN2~ // fixes ToB version
+    BUT_ONLY
+END ELSE BEGIN
+  APPEND ~interdia.2da~ ~IMOEN       BIMOEN2~ UNLESS ~[ %TAB%]BIMOEN2[ %TAB%%LNL%%MNL%%WNL%]~ // fixes SoA version
+END
+
+ACTION_IF NOT FILE_EXISTS_IN_GAME ~bimoen2.dlg~ THEN BEGIN COMPILE ~haldamir/dialogue/b!bimoen2.d~ END
+
+INCLUDE ~haldamir/lib/kit_ids_fixer.tpa~ // fixes kit.ids
+INCLUDE ~haldamir/lib/tob2soa.tph~ // makes sure SoA games have ToB scripting stuff
+
+/* creature copying and naming */
+INCLUDE ~haldamir/lib/cd_portrait_copy.tph~
+LAF cd_portrait_npc STR_VAR source = ~b!halda~ source_path = ~haldamir/portraits~ END
+
+COPY ~haldamir/character/b!hal.cre~ ~override~
+  SAY NAME1 @1
+  SAY NAME2 @1
+  SAY INITIAL_MEETING @2
+  SAY MORALE @3
+  SAY HAPPY @4
+  SAY UNHAPPY_ANNOYED @5
+  SAY UNHAPPY_SERIOUS @6
+  SAY UNHAPPY_BREAKING @7
+  SAY LEADER @8
+  SAY TIRED @9
+  SAY BORED @10
+  SAY BATTLE_CRY1 @11
+  SAY BATTLE_CRY2 @12
+  SAY BATTLE_CRY3 @13
+  SAY BATTLE_CRY4 @14
+  SAY DAMAGE @15
+  SAY DYING @16
+  SAY HURT @17
+  SAY AREA_FOREST @18
+  SAY AREA_CITY @19
+  SAY AREA_DUNGEON @20
+  SAY AREA_DAY @21
+  SAY AREA_NIGHT @22
+  SAY SELECT_COMMON1 @23
+  SAY SELECT_COMMON2 @24
+  SAY SELECT_COMMON3 @25
+  SAY SELECT_COMMON4 @26
+  SAY SELECT_COMMON5 @27
+  SAY SELECT_COMMON6 @28
+  SAY SELECT_ACTION1 @29
+  SAY SELECT_ACTION2 @30
+  SAY SELECT_ACTION3 @31
+  SAY SELECT_ACTION4 @32
+  SAY SELECT_ACTION5 @33
+  SAY SELECT_ACTION6 @34
+  SAY SELECT_ACTION7 @35
+  SAY SELECT_RARE1 @36
+  SAY SELECT_RARE2 @37
+  SAY CRITICAL_HIT @38
+  SAY CRITICAL_MISS @39
+  SAY TARGET_IMMUNE @40
+  SAY INVENTORY_FULL @41
+  SAY BIO @42
+  
+/* dialogue compilation */  
+COMPILE ~haldamir/dialogue/b!hal.d~
+COMPILE ~haldamir/dialogue/b!halj.d~
+COMPILE EVALUATE_BUFFER ~haldamir/dialogue/b!halp.d~
+COMPILE ~haldamir/dialogue/bb!hal.d~
+
+/* script compilation */
+COMPILE EVALUATE_BUFFER ~haldamir/script/b!hals.baf~
+COMPILE ~haldamir/script/b!hald.baf~
+EXTEND_BOTTOM ~AR0700.bcs~ ~haldamir/script/b!ar0700.baf~
+
+/* 2da appending */
+//2da appending for dialogues
+APPEND ~interdia.2da~ ~b!haldamir  bb!hal     bb!hal25~ UNLESS ~b!haldamir~
+APPEND ~pdialog.2da~ ~b!haldamir    b!halp       b!halj      b!hald       b!hal25p       b!hal25j       b!hal25d     b!hal25s~ UNLESS ~b!haldamir~

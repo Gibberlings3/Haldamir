@@ -1,0 +1,8 @@
+IF
+  Global("B!HaldamirExists","GLOBAL",0)
+THEN
+  RESPONSE #100
+    CreateCreature("b!hal",[001.001],0)
+    SetGlobal("B!HaldamirExists","GLOBAL",1)
+    Continue()
+END

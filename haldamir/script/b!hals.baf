@@ -1,0 +1,701 @@
+/* HALDAMIR SCRIPT FILE - b!hals.baf */
+/* CONTENTS */
+/* Moving to the Den of the Seven Vales */
+/* String Fixer */
+/* Leveling Script */
+/* Negating situational content if Haldamir is not present at the time */
+/* Timered talks */
+/* Elf talk */
+/* HALDAMIR SoA INTERJECTIONS */
+///* Trademeet Feud */
+///* MaeVar */
+///* Demon plane outside the planar sphere */
+///* Set Dace free */
+///* Slayer Change */
+///* Underdark */
+///* Drow transformation */
+///* Ust Natha slave pens */
+///* Phaere */
+///* Reaction to Valen */
+///* Bodhi dead */
+///* Suldanessellar */
+///* Hell */
+
+/* Moving to the Den of the Seven Vales */
+IF
+  Global("B!HaldamirExists","GLOBAL",1)
+THEN
+  RESPONSE #100
+    MoveBetweenAreas("AR0709",[995.488],2)
+    SetGlobal("B!HaldamirExists","GLOBAL",2)
+END
+
+/* String Fixer */
+IF
+HotKey(K)
+THEN
+RESPONSE #100
+StartCutSceneMode()
+StartCutScene("b!halsf")
+END
+
+/* Leveling Script */
+IF
+  InParty(Myself)
+  Global("B!HalLeveled","GLOBAL",0)
+  XPLT(Player1,125000)
+THEN
+  RESPONSE #100
+    SetGlobal("B!HalLeveled","GLOBAL",1)
+END
+
+IF
+  InParty(Myself)
+  Global("B!HalLeveled","GLOBAL",0)
+  XPGT(Player1,124999)
+  XPLT(Player1,250000)
+THEN
+  RESPONSE #100
+    AddXPObject("B!HALDAMIR",36001)
+    SetGlobal("B!HalLeveled","GLOBAL",1)
+END
+
+IF
+  InParty(Myself)
+  Global("B!HalLeveled","GLOBAL",0)
+  XPGT(Player1,249999)
+  XPLT(Player1,500000)
+THEN
+  RESPONSE #100
+    AddXPObject("B!HALDAMIR",161001)
+    SetGlobal("B!HalLeveled","GLOBAL",1)
+END
+
+IF
+  InParty(Myself)
+  Global("B!HalLeveled","GLOBAL",0)
+  XPGT(Player1,499999)
+  XPLT(Player1,750000)
+THEN
+  RESPONSE #100
+    AddXPObject("B!HALDAMIR",411001)
+    SetGlobal("B!HalLeveled","GLOBAL",1)
+END
+
+IF
+  InParty(Myself)
+  Global("B!HalLeveled","GLOBAL",0)
+  XPGT(Player1,749999)
+  XPLT(Player1,1000000)
+THEN
+  RESPONSE #100
+    AddXPObject("B!HALDAMIR",661001)
+    SetGlobal("B!HalLeveled","GLOBAL",1)
+END
+
+IF
+  InParty(Myself)
+  Global("B!HalLeveled","GLOBAL",0)
+  XPGT(Player1,999999)
+  XPLT(Player1,1250000)
+THEN
+  RESPONSE #100
+    AddXPObject("B!HALDAMIR",911001)
+    SetGlobal("B!HalLeveled","GLOBAL",1)
+END
+
+IF
+  InParty(Myself)
+  Global("B!HalLeveled","GLOBAL",0)
+  XPGT(Player1,1249999)
+  XPLT(Player1,1500000)
+THEN
+  RESPONSE #100
+    AddXPObject("B!HALDAMIR",1161001)
+    SetGlobal("B!HalLeveled","GLOBAL",1)
+END
+
+IF
+  InParty(Myself)
+  Global("B!HalLeveled","GLOBAL",0)
+  XPGT(Player1,1499999)
+THEN
+  RESPONSE #100
+    AddXPObject("B!HALDAMIR",1411001)
+    SetGlobal("B!HalLeveled","GLOBAL",1)
+END
+
+/* Negating situational content if Haldamir is not present at the time */
+IF 
+    !InParty(Myself)
+    Global("B!TrademeetFeud","GLOBAL",1)
+THEN
+    RESPONSE #100
+        SetGlobal("B!TrademeetFeud","GLOBAL",5)
+END
+
+IF
+  !InParty(Myself)
+  GlobalGT("EnteredArea","AR2100",0)
+  Global("B!HalUnderdark","GLOBAL",0)
+THEN
+  RESPONSE #100
+    SetGlobal("B!HalUnderdark","GLOBAL",5)
+END
+  
+IF
+  InParty(Myself)
+  Global("PlayerLooksLikeDrow","GLOBAL",1)
+  Global("B!HalLooksLikeDrow","GLOBAL",0)
+  GlobalGT("Chapter","GLOBAL",%bg2_chapter_5%)
+  See(Player1)
+  !See([ENEMY])
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+  RESPONSE #100
+    SetGlobal("B!HalLooksLikeDrow","GLOBAL",5)
+END
+
+IF
+  InParty(Myself)
+  Global("BodhiAppear","GLOBAL",1)
+  Global("B!HalValen","GLOBAL",0)
+  GlobalGT("Chapter","GLOBAL",%bg2_chapter_2%)
+  See(Player1)
+  !See([ENEMY])
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+  RESPONSE #100
+    SetGlobal("B!HalValen","GLOBAL",5)
+END
+
+
+/* Timered talks */
+IF
+  InParty(Myself)
+  See(Player1)
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+  Global("B!HalFriendship","GLOBAL",0)
+THEN
+  RESPONSE #100
+    RealSetGlobalTimer("B!HalTimer","GLOBAL",3600)
+    SetGlobal("B!HalFriendship","GLOBAL",1)
+END
+
+IF 
+  InParty(Myself)
+  See(Player1)
+  RealGlobalTimerExpired("B!HalTimer","GLOBAL")
+  Global("B!HalFriendship","GLOBAL",1)
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+  !AreaType(DUNGEON)
+  CombatCounter(0)
+  !See([ENEMY])
+  OR(5)
+    Global("B!HalTalk","GLOBAL",0)
+    Global("B!HalTalk","GLOBAL",2)
+    Global("B!HalTalk","GLOBAL",4)
+    Global("B!HalTalk","GLOBAL",6)
+    Global("B!HalTalk","GLOBAL",8)
+THEN
+  RESPONSE #100
+    IncrementGlobal("B!HalTalk","GLOBAL",1)
+END
+
+IF 
+  InParty(Myself)
+  See(Player1)
+  Global("B!HalFriendship","GLOBAL",1)
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+  !AreaType(DUNGEON)
+  CombatCounter(0)
+  !See([ENEMY])
+  OR(5)
+    Global("B!HalTalk","GLOBAL",1)
+    Global("B!HalTalk","GLOBAL",3)
+    Global("B!HalTalk","GLOBAL",5)
+    Global("B!HalTalk","GLOBAL",7)
+    Global("B!HalTalk","GLOBAL",9)
+THEN
+  RESPONSE #100
+    PlaySong(0)
+    PlaySound("bhald00")
+    StartDialogueNoSet(Player1)
+END
+
+/* Elf talk */
+IF 
+  InParty(Myself)
+  See(Player1)
+  Global("B!HalTalk","GLOBAL",4)
+  Global("B!HalElfTalk","GLOBAL",0)
+  Global("B!HalFriendship","GLOBAL",1)
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+  !AreaType(DUNGEON)
+  CombatCounter(0)
+  !See([ENEMY])
+THEN
+  RESPONSE #100
+    RealSetGlobalTimer("B!HalElfTimer","GLOBAL",3600)
+    SetGlobal("B!HalElfTalk","GLOBAL",1)
+END
+
+IF 
+  InParty(Myself)
+  See(Player1)
+  RealGlobalTimerExpired("B!HalElfTimer","GLOBAL")
+  Global("B!HalElfTalk","GLOBAL",1)
+  Global("B!HalFriendship","GLOBAL",1)
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+  !AreaType(DUNGEON)
+  CombatCounter(0)
+  !See([ENEMY])
+THEN
+  RESPONSE #100
+    SetGlobal("B!HalElfTalk","GLOBAL",2)
+END
+
+IF 
+  InParty(Myself)
+  See(Player1)
+  Global("B!HalElfTalk","GLOBAL",2)
+  Global("B!HalFriendship","GLOBAL",1)
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+  !AreaType(DUNGEON)
+  CombatCounter(0)
+  !See([ENEMY])
+THEN
+  RESPONSE #100
+    PlaySong(0)
+    PlaySound("bhald00")
+    StartDialogueNoSet(Player1)
+END
+
+/* HALDAMIR SoA INTERJECTIONS */
+
+///* Trademeet Feud */
+
+IF 
+    Global("B!TrademeetFeud","GLOBAL",1)
+    See(Player1)
+    InParty(Myself)
+    !See([ENEMY])
+    !StateCheck(Myself,CD_STATE_NOTVALID)
+    !StateCheck(Player1,CD_STATE_NOTVALID)
+    AreaCheck("AR2007")
+THEN
+    RESPONSE #100
+        SetGlobal("B!TrademeetFeud","GLOBAL",2)
+END
+
+IF 
+    Global("B!TrademeetFeud","GLOBAL",2)
+    See(Player1)
+    InParty(Myself)
+    !See([ENEMY])
+    !StateCheck(Myself,CD_STATE_NOTVALID)
+    !StateCheck(Player1,CD_STATE_NOTVALID)
+    !AreaCheck("AR2007")
+THEN
+    RESPONSE #100
+        StartDialogueNoSet(Player1)
+END
+
+
+///* MaeVar */
+IF 
+    Global("B!HaldamirMetMaeVar","GLOBAL",1)
+    See(Player1)
+    InParty(Myself)
+    !See([ENEMY])
+    !StateCheck(Myself,CD_STATE_NOTVALID)
+    !StateCheck(Player1,CD_STATE_NOTVALID)
+    !AreaCheck("AR0301")
+THEN
+    RESPONSE #100
+        SetGlobal("B!HaldamirMetMaeVar","GLOBAL",2)
+END
+
+IF
+    Global("B!HaldamirMetMaeVar","GLOBAL",2)
+    CombatCounter(0)
+    See(Player1)
+    InParty(Myself)
+    !See([ENEMY])
+    !StateCheck(Myself,CD_STATE_NOTVALID)
+    !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+    RESPONSE #100
+        StartDialogueNoSet(Player1)
+END
+
+///* Demon plane outside the planar sphere */
+IF
+  InParty(Myself)
+  AreaCheck("AR0414")
+  Global("B!HaldamirDemonPlane","GLOBAL",0)
+  See(Player1)
+  !See([ENEMY])
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+  RESPONSE #100
+    SetGlobal("B!HaldamirDemonPlane","GLOBAL",1)
+END
+
+IF
+  InParty(Myself)
+  AreaCheck("AR0414")
+  Global("B!HaldamirDemonPlane","GLOBAL",1)
+  See(Player1)
+  !See([ENEMY])
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+  RESPONSE #100
+    StartDialogueNoSet(Player1)
+END
+
+///* Set Dace free */
+IF 
+  InParty(Myself)
+  GlobalGT("AsylumDaceGone","GLOBAL",0)
+  Global("Chapter","GLOBAL",%bg2_chapter_4%)
+  Global("B!HaldamirDace","GLOBAL",0)
+  See(Player1)
+  !See([ENEMY])
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+  RESPONSE #100
+    SetGlobal("B!HaldamirDace","GLOBAL",1)
+END
+
+IF 
+  InParty(Myself)
+  Global("B!HaldamirDace","GLOBAL",1)
+  See(Player1)
+  !See([ENEMY])
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+  RESPONSE #100
+    StartDialogueNoSet(Player1)
+END
+
+///* Slayer Change */
+IF
+  InParty(Myself)
+  GlobalGT("SelfTalk","GLOBAL",1)
+  Global("B!HalSlayer","GLOBAL",1)
+  AreaCheck("AR1514")
+  Global("Chapter","GLOBAL",%bg2_chapter_4%)
+  See(Player1)
+  !See([ENEMY])
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+  RESPONSE #100
+    SetGlobal("B!HalSlayer","GLOBAL",2)
+END
+
+IF
+  InParty(Myself)
+  Global("B!HalSlayer","GLOBAL",2)
+  See(Player1)
+  !See([ENEMY])
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+  RESPONSE #100
+    StartDialogueNoSet(Player1)
+END  
+
+///* Second Slayer change */
+IF
+  InParty(Myself)
+  Global("Chapter","GLOBAL",%bg2_chapter_4%)
+  Global("DrowTalk","GLOBAL",5) 
+  Global("B!HalSlayer","GLOBAL",3)
+  See(Player1)
+  !See([ENEMY])
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+  RESPONSE #100
+    SetGlobal("B!HalSlayer","GLOBAL",4)
+END
+
+IF
+  InParty(Myself)
+  Global("B!HalSlayer","GLOBAL",4)
+  See(Player1)
+  !See([ENEMY])
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+  RESPONSE #100
+    StartDialogueNoSet(Player1)
+END
+
+///* Underdark */
+IF
+  InParty(Myself)
+  GlobalGT("EnteredArea","AR2100",0)
+  Global("B!HalUnderdark","GLOBAL",0)
+  AreaCheck("AR2100")
+  See(Player1)
+  !See([ENEMY])
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+  RESPONSE #100
+    SetGlobal("B!HalUnderdark","GLOBAL",1)
+END
+
+IF
+  InParty(Myself)
+  Global("B!HalUnderdark","GLOBAL",1)
+  See(Player1)
+  !See([ENEMY])
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+  RESPONSE #100
+    StartDialogueNoSet(Player1)
+END
+
+///* Drow transformation */
+IF
+  InParty(Myself)
+  Global("PlayerLooksLikeDrow","GLOBAL",1)
+  Global("B!HalLooksLikeDrow","GLOBAL",0)
+  !AreaCheck("AR2102")
+  See(Player1)
+  !See([ENEMY])
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+  RESPONSE #100
+    SetGlobal("B!HalLooksLikeDrow","GLOBAL",1)
+END
+
+IF
+  InParty(Myself)
+  Global("B!HalLooksLikeDrow","GLOBAL",1)
+  See(Player1)
+  !See([ENEMY])
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+  RESPONSE #100
+    StartDialogueNoSet(Player1)
+END
+
+///* Ust Natha slave pens */
+IF
+  InParty(Myself)
+  Global("B!HalSlaves","GLOBAL",1)
+  AreaCheck("AR2200")
+  See(Player1)
+  !See([ENEMY])
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+  RESPONSE #100
+    RealSetGlobalTimer("B!HalSlavesT","GLOBAL",60)
+    SetGlobal("B!HalSlaves","GLOBAL",2)
+END
+
+IF
+  RealGlobalTimerExpired("B!HalSlavesT","GLOBAL")
+  InParty(Myself)
+  Global("B!HalSlaves","GLOBAL",2)
+  See(Player1)
+  !See([ENEMY])
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+  RESPONSE #100
+    SetGlobal("B!HalSlaves","GLOBAL",3)
+END
+
+IF
+  InParty(Myself)
+  Global("B!HalSlaves","GLOBAL",3)
+  See(Player1)
+  !See([ENEMY])
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+  RESPONSE #100
+    StartDialogueNoSet(Player1)
+END
+
+///* Phaere */
+IF
+  InParty(Myself)
+  Global("PhaereJob","GLOBAL",1)
+  Global("B!HalPhaere","GLOBAL",0)
+  See(Player1)
+  !See([ENEMY])
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+  RESPONSE #100
+    SetGlobal("B!HalPhaere","GLOBAL",1)
+END
+
+IF
+  InParty(Myself)
+  Global("B!HalPhaere","GLOBAL",1)
+  See(Player1)
+  !See([ENEMY])
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+  RESPONSE #100
+    StartDialogueNoSet(Player1)
+END
+
+///* Solaufein */
+IF
+  InParty(Myself)
+  Global("SolaufeinJob","GLOBAL",8)
+  Global("B!HalSolaufein1","GLOBAL",0)
+  See(Player1)
+  !See([ENEMY])
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+  RESPONSE #100
+    SetGlobal("B!HalSolaufein1","GLOBAL",1)
+END
+
+IF
+  InParty(Myself)
+  Global("B!HalSolaufein1","GLOBAL",1)
+  AreaCheck("AR2204")
+  Global("Chapter","GLOBAL",%bg2_chapter_5%)
+  See(Player1)
+  !See([ENEMY])
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+  RESPONSE #100
+    StartDialogueNoSet(Player1)
+END
+
+///* Reaction to Valen */
+IF
+  InParty(Myself)
+  Global("BodhiAppear","GLOBAL",1)
+  Global("B!HalValen","GLOBAL",0)
+  See(Player1)
+  !See([ENEMY])
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+  RESPONSE #100
+    SetGlobal("B!HalValen","GLOBAL",1)
+END
+
+IF
+  InParty(Myself)
+  Global("B!HalValen","GLOBAL",1)
+  See(Player1)
+  !See([ENEMY])
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+  RESPONSE #100
+    StartDialogueNoSet(Player1)
+END
+
+///* Bodhi dead */
+IF
+  InParty(Myself)
+  Dead("c6bodhi")
+  !AreaCheck("AR0808")
+  !AreaCheck("AR0809")
+  Global("B!HalC6BodhiDead","GLOBAL",0)
+  See(Player1)
+  !See([ENEMY])
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+  RESPONSE #100
+    SetGlobal("B!HalC6BodhiDead","GLOBAL",1)
+END
+
+IF
+  InParty(Myself)
+  Global("B!HalC6BodhiDead","GLOBAL",1)
+  See(Player1)
+  !See([ENEMY])
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+  RESPONSE #100
+    StartDialogueNoSet(Player1)
+END
+
+///* Suldanessellar */
+IF
+  InParty(Myself)
+  AreaCheck("AR2800")
+  Global("B!HalSuldanessellar","GLOBAL",0)
+  See(Player1)
+  !See([ENEMY])
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+  RESPONSE #100
+    SetGlobal("B!HalSuldanessellar","GLOBAL",1)
+END
+
+IF
+  InParty(Myself)
+  Global("B!HalSuldanessellar","GLOBAL",1)
+  See(Player1)
+  !See([ENEMY])
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+  RESPONSE #100
+    StartDialogueNoSet(Player1)
+END
+
+///* Hell */
+IF
+  InParty(Myself)
+  AreaCheck("AR2900")
+  Global("B!HalHell","GLOBAL",0)
+  See(Player1)
+  !See([ENEMY])
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+  RESPONSE #100
+    SetGlobal("B!HalHell","GLOBAL",1)
+END
+
+IF
+  InParty(Myself)
+  Global("B!HalHell","GLOBAL",1)
+  See(Player1)
+  !See([ENEMY])
+  !StateCheck(Myself,CD_STATE_NOTVALID)
+  !StateCheck(Player1,CD_STATE_NOTVALID)
+THEN
+  RESPONSE #100
+    StartDialogueNoSet(Player1)
+END
