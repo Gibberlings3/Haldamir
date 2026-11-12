@@ -32,7 +32,9 @@ END
 LANGUAGE ~English~ ~English~ ~haldamir/tra/english/setup-haldamir.tra~
 LANGUAGE ~German~  ~german~  ~haldamir/tra/english/setup-haldamir.tra~
                              ~haldamir/tra/german/setup-haldamir.tra~
-
+LANGUAGE ~Schinese~  ~schinese~  ~haldamir/tra/english/setup-haldamir.tra~
+                             ~haldamir/tra/schinese/setup-haldamir.tra~
+							 
 BEGIN @1
 
 APPEND ~STATE.IDS~ ~0x80101FEF CD_STATE_NOTVALID~ UNLESS ~CD_STATE_NOTVALID~
